@@ -83,3 +83,24 @@ select dept_name, count_by_department.emp_count
 
 -- Bonus: Find the highest salary per department and department manager
 
+with recent_salaries as (
+with current_emp_date as(
+with current_emp as (select emp_no, max(from_date) as from_date from dept_emp group by emp_no)
+select current_emp.emp_no, 
+		current_emp.from_date, 
+		dept_emp.dept_no
+		from current_emp join dept_emp 
+		on current_emp.emp_no=dept_emp.emp_no
+		and dept_emp.from_date=current_emp.from_date)
+select current_emp_date.emp_no,
+		current_emp_date.dept_no,
+		salaries.salary
+		from current_emp_date join salaries
+		on current_emp_date.emp_no=salaries.emp_no
+		and current_emp_date.from_date=salaries.from_date
+		order by emp_no)
+select dept_no, 
+		max(salary) as highest_salary from
+		recent_salaries
+		group by dept_no
+		order by dept_no 
